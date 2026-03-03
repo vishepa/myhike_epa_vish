@@ -1,6 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
 
+import { db } from './firebaseConfig.js';
+import { doc, onSnapshot } from 'firebase/firestore';
 //--------------------------------------------------------------
 // If you have custom global styles, import them as well:
 //--------------------------------------------------------------
@@ -10,8 +12,68 @@ import '/src/styles/style.css';
 // Custom global JS code (shared with all pages)can go here.
 //--------------------------------------------------------------
 
-// This is an example function. Replace it with your own logic.
-function sayHello() {
-  // TODO: implement your logic here
+import {
+    onAuthReady
+} from "./authentication.js"
+
+
+
+
+
+
+function showName() {
+  const nameElement = document.getElementById("name-goes-here");
+
+  // Wait for Firebase to determine the current authentication state.
+  // onAuthReady() runs the callback once Firebase finishes checking the signed-in user.
+  // The user's name is extracted from the Firebase Authentication object
+  // You can "go to console" to check out current users. 
+
+  onAuthReady((user) => {
+    if (!user) {
+      if (window.location.pathname.endsWith('main.html')) {
+
+        // If no user is signed in → redirect back to login page.
+        location.href = "index.html";
+        return;
+      }
+      
+    }
+
+    // If a user is logged in:
+    // Use their display name if available, otherwise show their email.
+    if (!user) {
+
+      return;
+    }
+    const name = user.displayName || user.email;
+
+    console.log(name);
+    // Update the welcome message with their name/email.
+    if (nameElement) {
+      nameElement.textContent = `${name}!`;
+      
+    }
+  });
 }
-document.addEventListener('DOMContentLoaded', sayHello);
+showName();
+
+
+function readQuote(day) {
+  const quoteDocRef = doc(db, 'quotes', day);
+
+  onSnapshot(quoteDocRef, (docSnap) => {
+    if (docSnap.exists()) {
+      document.getElementById('quote-goes-here').innerHTML = docSnap.data().quote;
+    } else {
+      console.log("No such document!");
+    }
+  }, (error) => {
+    console.error("Error listening to document: ", error);
+  });
+}
+readQuote('tuesday');
+
+
+
+
