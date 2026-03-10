@@ -4,6 +4,8 @@ import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore
 
 import { db } from './firebaseConfig.js';
 import { doc, onSnapshot } from 'firebase/firestore';
+
+import './styles/style.css';
 //--------------------------------------------------------------
 // If you have custom global styles, import them as well:
 //--------------------------------------------------------------
